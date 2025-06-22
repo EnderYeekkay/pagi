@@ -3,9 +3,12 @@ console.log('\u001b[33;1m✴ Hello, anomaly world! ✴\u001b[0m')
 const beginTime = new Date()
 const fs = require('fs')
 const { Client, GatewayIntentBits, Collection, EmbedBuilder, Message, GuildMember, UserSelectMenuInteraction, time} = require('discord.js')
+const roles = require('./rolesid.json')
 const pg = require('pg')
+const ws = require('ws')
 const Model = require('./models/base_model')
 const { log } = require('console')
+const { channel } = require('diagnostics_channel')
 const client = new Client({intents: [
   GatewayIntentBits.Guilds,
   GatewayIntentBits.GuildModeration,
@@ -17,6 +20,11 @@ const client = new Client({intents: [
   GatewayIntentBits.GuildMessageReactions,
   GatewayIntentBits.GuildMessageTyping,
   GatewayIntentBits.GuildMessages,
+  GatewayIntentBits.GuildScheduledEvents,
+  GatewayIntentBits.GuildPresences,
+  GatewayIntentBits.GuildMembers,
+  GatewayIntentBits.DirectMessageReactions,
+  GatewayIntentBits.DirectMessageTyping,
   GatewayIntentBits.DirectMessages
 ]})
 config = require('./config.json')
@@ -104,6 +112,8 @@ userSelectMenusFiles.forEach(value => {
   }
 })
 console.groupEnd()
+// Сохранение ролей в клиенте
+client.roles = require('./rolesid.json')
 
 // Генератор embed для сообщения об ошибке
 client.generateErrorMessage = content => 
@@ -120,7 +130,25 @@ client.generateErrorMessage = content =>
   }
 }
 
-require('./events')(client)
+/**
+ * 
+ * @param {GuildMember} member 
+ */
+client.calcClearanceLevel = (member) => {
+  const roles = require('./rolesid.json')
+  var clearance_level = 0
+  for (const [role_name, role_specs] of Object.entries(roles)) {
+    const found = member.roles.cache.find(role => role.id == role_specs.id)
+    clearance_level = (found && role_specs.cl > clearance_level) ? role_specs.cl : clearance_level
+  }
+  return clearance_level
+}
+
+// tic_tac_toe  
+global.tic_tac_toe = new Map()
+
+client.anomaliesCategoryId = '852138601034809348'
+require('./events')(client, roles)
 
 
 // Ивенты process

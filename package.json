@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "bot.js",
   "scripts": {
-    "test": "test"
+    "dev": "supervisor bot.js",
+    "prod": "node bot.js",
+    "dc": "node deploy-commands.js"
   },
   "author": "",
   "license": "ISC",
@@ -11,5 +13,10 @@
     "type": "git",
     "url": "pagi"
   },
-  "description": ""
+  "description": "",
+  "dependencies": {
+    "discord.js": "^14.20.0",
+    "math3d": "^0.2.2",
+    "pg": "^8.16.2"
+  }
 }

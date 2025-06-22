@@ -1,6 +1,5 @@
 const {MessageComponentInteraction, EmbedBuilder, Client, Guild, GuildMember, GuildChannel, TextChannel} = require('discord.js')
 const pg = require('pg');
-const constants = require('../constants.json');
 const { Vector3 } = require('math3d');
 const IsolationLevel = {
     Uncommited: 'Read uncommitted',
